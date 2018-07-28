@@ -1,0 +1,43 @@
+{
+    "name": "by/guest-entries-notification",
+    "description": "A plugin to get notification when an entry is created.",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "guest entries notification"
+    ],
+    "support": {
+        "docs": "https://github.com/bhashkar007/guest-entries-notification/blob/master/README.md",
+        "issues": "https://github.com/bhashkar007/guest-entries-notification/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bhashkar Yadav",
+            "homepage": "http://sidd3.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "by\\guestentriesnotification\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Guest Entries Notification",
+        "handle": "guest-entries-notification",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/bhashkar007/guest-entries-notification/master/CHANGELOG.md",
+        "components": {
+            "guestEntriesNotificationService": "by\\guestentriesnotification\\services\\GuestEntriesNotificationService"
+        },
+        "class": "by\\guestentriesnotification\\GuestEntriesNotification"
+    }
+}

@@ -1,0 +1,54 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Guest Entries Notification plugin for Craft CMS 3.x
+ *
+ * Guest Entries Notification Settings.twig
+ *
+ * @author    Bhashkar Yadav
+ * @copyright Copyright (c) 2018 Bhashkar Yadav
+ * @link      http://sidd3.com
+ * @package   GuestEntriesNotification
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("by\\guestentriesnotification\\assetbundles\\guestentriesnotification\\GuestEntriesNotificationAsset") %}
+
+{% set systemSettings = craft.systemSettings.email %}
+
+{% set defaultEmail = systemSettings.fromEmail %}
+
+{{ forms.textField({
+    label: 'From Email',
+    instructions: 'Enter the Email that will send the Notification Emails.',
+    id: 'fromEmail',
+    name: 'fromEmail',
+    value: settings['fromEmail']})
+}}
+
+{{ forms.textField({
+    label: 'From Name',
+    instructions: 'Enter the Name that will send the Notification Emails.',
+    id: 'fromName',
+    name: 'fromName',
+    value: settings['fromName']})
+}}
+
+{{ forms.textField({
+    label: 'Email',
+    instructions: 'Enter the Email that will receive Notification Email. (If empty emails will be sent to System Email Address)',
+    id: 'emailTo',
+    name: 'emailTo',
+    value: settings['emailTo']})
+}}
+
+{{ forms.textField({
+    label: 'Email Subject',
+    instructions: 'Enter the Subject Line for Notification Email',
+    id: 'emailSubject',
+    name: 'emailSubject',
+    value: settings['emailSubject']})
+}}
