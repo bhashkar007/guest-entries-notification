@@ -1,4 +1,4 @@
-![Icon](src/icon.svg)
+<img src="https://github.com/bhashkar007/guest-entries-notification/blob/master/src/icon.svg" width="128">
 
 # Guest Entries Notification Overview
 
