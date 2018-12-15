@@ -25,15 +25,24 @@ Install this plugin through the Plugin Store or follow these instructions.
 ## Configuring Guest Entries Notification
 
 Guest Entries Notification have following setting fields:
-- From Email
+- **From Email**
+
     Used to set Sender Email. By default **System Email Address** will be used.
-- From Name
+    
+- **From Name**
+
     Used to set Sender Email. By default **Sender Name** will be used.
-- Email
+    
+- **Email**
+
     Used to set Recevier Email. By default **System Email Address** will be used.
-- Email Subject
+    
+- **Email Subject**
+
     Used to set Email Subject.
-- Set the template for the email
-    Used to override Email template. The template will receive a `entry` variable through which all entry data can be used.
+    
+- **Set the template for the email**
+
+    Used to override Email template. The template will receive a `entry` variable through which all entry data can be used. By default template from [templates/notification](/src/templates/notification.twig) will be used.
 
 Brought to you by [Bhashkar Yadav](http://sidd3.com)
