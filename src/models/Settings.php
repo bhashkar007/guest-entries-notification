@@ -28,6 +28,7 @@ class Settings extends Model
     /**
      * @var string
      */
+    public $confirmationTemplate = '';
     public $fromEmail = '';
     public $fromName = '';
     public $emailTo = '';
@@ -42,6 +43,8 @@ class Settings extends Model
     public function rules()
     {
         return [
+            ['confirmationTemplate', 'string'],
+            ['confirmationTemplate', 'default', 'value' => ''],
             ['fromEmail', 'string'],
             ['fromEmail', 'default', 'value' => ''],
             ['fromName', 'string'],

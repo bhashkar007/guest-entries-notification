@@ -52,3 +52,11 @@
     name: 'emailSubject',
     value: settings['emailSubject']})
 }}
+
+{{ forms.textField({
+    label: 'Set the template for the email',
+    instructions: 'The template will receive a `entry` variable',
+    id: 'confirmationTemplate',
+    name: 'confirmationTemplate',
+    value: settings['confirmationTemplate']})
+}}

@@ -61,6 +61,19 @@ class GuestEntriesNotification extends Plugin
         parent::init();
         self::$plugin = $this;
 
+
+        if (!Craft::$app->plugins->isPluginInstalled('guest-entries')) {
+            Craft::$app->session->setNotice(Craft::t('guest-entries-notification', 'The Guest Entries plugin is not installed or activated, Guest Entries Notification does not work without it.'));
+        }
+
+
+        Event::on(SaveController::class, SaveController::EVENT_AFTER_SAVE_ENTRY, function(SaveEvent $e) {
+            $entry = $e->entry;
+        
+            GuestEntriesNotification::$plugin->guestEntriesNotificationService->sendNotification($entry);
+            die();
+        });
+
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
@@ -69,14 +82,6 @@ class GuestEntriesNotification extends Plugin
                 }
             }
         );
-
-        Event::on(SaveController::class, SaveController::EVENT_AFTER_SAVE_ENTRY, function(SaveEvent $e) {
-            // Grab the entry
-            $entry = $e->entry;
-
-            GuestEntriesNotification::$plugin->guestEntriesNotificationService->sendNotification($entry);
-        });
-
 
         Craft::info(
             Craft::t(

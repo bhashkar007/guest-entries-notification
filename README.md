@@ -1,16 +1,16 @@
-# Guest Entries Notification plugin for Craft CMS 3.x
+![Icon](src/icon.svg)
 
-A plugin to get notification when an entry is created.
+# Guest Entries Notification Overview
 
-![Screenshot](resources/img/plugin-logo.png)
+This plugin sends a notification when a guest creates an entry through guest-entry plugin.
 
 ## Requirements
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+This plugin requires Craft CMS 3 and the [Guest Entries](https://github.com/craftcms/guest-entries) plugin.
 
 ## Installation
 
-To install the plugin, follow these instructions.
+Install this plugin through the Plugin Store or follow these instructions.
 
 1. Open your terminal and go to your Craft project:
 
@@ -20,24 +20,20 @@ To install the plugin, follow these instructions.
 
         composer require bhashkar007/guest-entries-notification
 
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Guest Entries Notification.
-
-## Guest Entries Notification Overview
-
--Insert text here-
+3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Craft Contact Form Extensions.
 
 ## Configuring Guest Entries Notification
 
--Insert text here-
-
-## Using Guest Entries Notification
-
--Insert text here-
-
-## Guest Entries Notification Roadmap
-
-Some things to do, and ideas for potential features:
-
-* Release it
+Guest Entries Notification have following setting fields:
+- From Email
+    Used to set Sender Email. By default **System Email Address** will be used.
+- From Name
+    Used to set Sender Email. By default **Sender Name** will be used.
+- Email
+    Used to set Recevier Email. By default **System Email Address** will be used.
+- Email Subject
+    Used to set Email Subject.
+- Set the template for the email
+    Used to override Email template. The template will receive a `entry` variable through which all entry data can be used.
 
 Brought to you by [Bhashkar Yadav](http://sidd3.com)
