@@ -69,9 +69,7 @@ class GuestEntriesNotification extends Plugin
 
         Event::on(SaveController::class, SaveController::EVENT_AFTER_SAVE_ENTRY, function(SaveEvent $e) {
             $entry = $e->entry;
-        
             GuestEntriesNotification::$plugin->guestEntriesNotificationService->sendNotification($entry);
-            die();
         });
 
         Event::on(
