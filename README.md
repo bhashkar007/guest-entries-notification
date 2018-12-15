@@ -18,7 +18,7 @@ Install this plugin through the Plugin Store or follow these instructions.
 
 2. Then tell Composer to load the plugin:
 
-        composer require bhashkar007/guest-entries-notification
+        composer require by/guest-entries-notification
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Craft Contact Form Extensions.
 
