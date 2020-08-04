@@ -37,7 +37,7 @@ class GuestEntriesNotificationService extends Component
         $pluginSettings = GuestEntriesNotification::$plugin->getSettings();
         
         if(isset($pluginSettings->emailTo) and !empty($pluginSettings->emailTo)){
-            $emailTo = $pluginSettings->emailTo;
+            $emailTo = explode(',', $pluginSettings->emailTo);
         }else{
             $emailTo = $settings['fromEmail'];
         }
