@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2018 Bhashkar Yadav
  */
 
-namespace by\guestentriesnotification\assetbundles\GuestEntriesNotification;
+namespace by\guestentriesnotification\assetbundles\guestentriesnotification;
 
 use Craft;
 use craft\web\AssetBundle;
