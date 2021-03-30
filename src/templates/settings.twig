@@ -17,7 +17,7 @@
 
 {% do view.registerAssetBundle("by\\guestentriesnotification\\assetbundles\\guestentriesnotification\\GuestEntriesNotificationAsset") %}
 
-{% set systemSettings = craft.systemSettings.email %}
+{% set systemSettings = craft.app.projectConfig.get('email') %}
 
 {% set defaultEmail = systemSettings.fromEmail %}
 
