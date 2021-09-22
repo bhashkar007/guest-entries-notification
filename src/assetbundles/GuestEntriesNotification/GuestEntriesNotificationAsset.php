@@ -4,7 +4,7 @@
  *
  * A plugin to get notification when an entry is created.
  *
- * @link      http://sidd3.com
+ * @link      https://360adaptive.com
  * @copyright Copyright (c) 2018 Bhashkar Yadav
  */
 
