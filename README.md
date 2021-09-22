@@ -45,4 +45,4 @@ Guest Entries Notification have following setting fields:
 
     Used to override Email template. The template will receive a `entry` variable through which all entry data can be used. By default template from [templates/notification](/src/templates/notification.twig) will be used.
 
-Brought to you by [Bhashkar Yadav](http://sidd3.com)
+Brought to you by [Bhashkar Yadav](https://360adaptive.com)
