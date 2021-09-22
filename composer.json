@@ -2,7 +2,7 @@
     "name": "by/guest-entries-notification",
     "description": "A plugin to get notification when an entry is created.",
     "type": "craft-plugin",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "keywords": [
         "craft",
         "cms",
