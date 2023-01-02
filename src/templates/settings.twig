@@ -1,7 +1,7 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
 {#
 /**
- * Guest Entries Notification plugin for Craft CMS 3.x
+ * Guest Entries Notification plugin for Craft CMS 4.x
  *
  * Guest Entries Notification Settings.twig
  *
@@ -9,22 +9,22 @@
  * @copyright Copyright (c) 2018 Bhashkar Yadav
  * @link      https://360adaptive.com
  * @package   GuestEntriesNotification
- * @since     1.0.0
+ * @since     2.0.0
  */
 #}
 
 {% import "_includes/forms" as forms %}
 
-{% set systemSettings = craft.systemSettings.email %}
-
-{% set defaultEmail = systemSettings.fromEmail %}
+{% set prohectConfig = craft.app.getProjectConfig() %}
+{% set emailSettings = prohectConfig.get('email') %}
 
 {{ forms.textField({
     label: 'From Email',
     instructions: 'Enter the Email that will send the Notification Emails.',
     id: 'fromEmail',
     name: 'fromEmail',
-    value: settings['fromEmail']})
+    value: settings['fromEmail'] ? settings['fromEmail'] : emailSettings.fromEmail
+    })
 }}
 
 {{ forms.textField({
@@ -32,7 +32,7 @@
     instructions: 'Enter the Name that will send the Notification Emails.',
     id: 'fromName',
     name: 'fromName',
-    value: settings['fromName']})
+    value: settings['fromName'] ? settings['fromName'] : emailSettings.fromEmail})
 }}
 
 {{ forms.textField({

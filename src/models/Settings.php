@@ -1,6 +1,6 @@
 <?php
 /**
- * Guest Entries Notification plugin for Craft CMS 3.x
+ * Guest Entries Notification plugin for Craft CMS 4.x
  *
  * A plugin to get notification when an entry is created.
  *
@@ -18,7 +18,7 @@ use craft\base\Model;
 /**
  * @author    Bhashkar Yadav
  * @package   GuestEntriesNotification
- * @since     1.0.0
+ * @since     2.0.0
  */
 class Settings extends Model
 {
@@ -40,7 +40,7 @@ class Settings extends Model
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             ['confirmationTemplate', 'string'],

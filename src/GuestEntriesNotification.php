@@ -1,6 +1,6 @@
 <?php
 /**
- * Guest Entries Notification plugin for Craft CMS 3.x
+ * Guest Entries Notification plugin for Craft CMS 4.x
  *
  * A plugin to get notification when an entry is created.
  *
@@ -14,6 +14,7 @@ use by\guestentriesnotification\services\GuestEntriesNotificationService as Gues
 use by\guestentriesnotification\models\Settings;
 
 use Craft;
+use craft\base\Model;
 use craft\base\Plugin;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
@@ -28,7 +29,7 @@ use yii\base\Event;
  *
  * @author    Bhashkar Yadav
  * @package   GuestEntriesNotification
- * @since     1.0.0
+ * @since     2.0.0
  *
  * @property  GuestEntriesNotificationServiceService $guestEntriesNotificationService
  */
@@ -48,7 +49,7 @@ class GuestEntriesNotification extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '1.0.0';
+    public string $schemaVersion = '2.0.0';
 
     // Public Methods
     // =========================================================================
@@ -97,7 +98,7 @@ class GuestEntriesNotification extends Plugin
     /**
      * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?Model
     {
         return new Settings();
     }

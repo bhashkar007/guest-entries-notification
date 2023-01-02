@@ -1,6 +1,6 @@
 <?php
 /**
- * Guest Entries Notification plugin for Craft CMS 3.x
+ * Guest Entries Notification plugin for Craft CMS 4.x
  *
  * A plugin to get notification when an entry is created.
  *

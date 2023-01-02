@@ -1,6 +1,6 @@
 <?php
 /**
- * Guest Entries Notification plugin for Craft CMS 3.x
+ * Guest Entries Notification plugin for Craft CMS 4.x
  *
  * A plugin to get notification when an entry is created.
  *
@@ -17,7 +17,7 @@ use craft\web\assets\cp\CpAsset;
 /**
  * @author    Bhashkar Yadav
  * @package   GuestEntriesNotification
- * @since     1.0.0
+ * @since     2.0.0
  */
 class GuestEntriesNotificationAsset extends AssetBundle
 {
