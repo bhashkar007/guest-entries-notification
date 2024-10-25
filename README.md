@@ -6,7 +6,7 @@ This plugin sends a notification when a guest creates an entry through guest-ent
 
 ## Requirements
 
-This plugin requires Craft CMS 3 and the [Guest Entries](https://github.com/craftcms/guest-entries) plugin.
+This plugin requires Craft CMS 5 and the [Guest Entries](https://github.com/craftcms/guest-entries) plugin.
 
 ## Installation
 
