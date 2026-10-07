@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Message Subject or Title</title>
+    <title>{{ subject ?? "New entry" }}</title>
     <style type="text/css">
         /* Based on The MailChimp Reset INLINE: Yes. */
         /* Client-specific Styles */
@@ -162,7 +162,7 @@
                         <tr>
                             <td style="border-collapse: collapse;">
                                 <span style="font-size: 19px; line-height: 28px; font-family: Helvetica; color: #242424;">
-                                    Hey, there! A new entry has been created in <span style="font-weight: bold;">{{ entry.section }}</span> Section.
+                                    Hey, there! A new entry has been created in <span style="font-weight: bold;">{{ entry.section.name }}</span> Section.
                                 </span>
                             </td>
                         </tr>

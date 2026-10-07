@@ -1,8 +1,8 @@
 {
-    "name": "by/guest-entries-notification",
-    "description": "A plugin to get notification when an entry is created.",
+    "name": "uxi360/guest-entries-notification",
+    "description": "Email notifications for entries submitted through the Guest Entries plugin.",
     "type": "craft-plugin",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -17,28 +17,24 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Bhashkar Yadav",
-            "homepage": "https://360adaptive.com"
+            "name": "UXI360 InfoTech",
+            "homepage": "https://uxi360.com"
         }
     ],
     "require": {
-        "craftcms/cms": "^4.0.0",
-        "craftcms/guest-entries": "^3.0.0"
+        "php": "^8.2",
+        "craftcms/cms": "^5.0.0",
+        "craftcms/guest-entries": "^4.0.0"
     },
     "autoload": {
         "psr-4": {
-          "by\\guestentriesnotification\\": "src/"
+            "uxi360\\guestentriesnotification\\": "src/"
         }
     },
     "extra": {
         "name": "Guest Entries Notification",
         "handle": "guest-entries-notification",
-        "hasCpSettings": true,
-        "hasCpSection": false,
         "changelogUrl": "https://raw.githubusercontent.com/bhashkar007/guest-entries-notification/master/CHANGELOG.md",
-        "components": {
-            "guestEntriesNotificationService": "by\\guestentriesnotification\\services\\GuestEntriesNotificationService"
-        },
-        "class": "by\\guestentriesnotification\\GuestEntriesNotification"
+        "class": "uxi360\\guestentriesnotification\\GuestEntriesNotification"
     }
 }
