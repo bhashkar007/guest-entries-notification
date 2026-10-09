@@ -46,6 +46,7 @@ Do **not** uninstall the plugin from the control panel while doing this - only t
 What changes for you:
 
 - **Notifications are off until you enable them.** After upgrading, go to the plugin settings and turn on **Notify** for each section that should send emails.
+- **Recipients, subject and template are now set per section.** The general Email, Email Subject and Email Template settings from 2.x are no longer used, so re-enter them in the Section Settings table.
 - Notifications are now sent through the queue by default. Make sure your [queue is running](https://craftcms.com/docs/5.x/system/queue.html), or turn off **Send through the queue** in the plugin settings.
 - The PHP namespace is now `uxi360\guestentriesnotification`, and the service is `notifications` (was `guestEntriesNotificationService`). This only matters if you call the plugin from your own PHP code.
 - Entries that Guest Entries flags as spam no longer trigger a notification.
@@ -54,27 +55,11 @@ What changes for you:
 
 Go to **Settings → Plugins → Guest Entries Notification**.
 
-### Sender
+### General
 
 - **From Email** - the address notifications are sent from. Defaults to the system email address.
 - **From Name** - the sender name. Defaults to the system sender name.
 - **Reply-To** - where replies go. This can be an entry value: `{email}` uses the entry's `email` field, so you can reply straight to the person who submitted the entry.
-
-### Recipients
-
-- **Email** - who receives the notification. Separate several addresses with commas. Defaults to the system email address.
-- **CC** / **BCC** - additional recipients, comma-separated.
-
-Invalid addresses are skipped and noted in the Craft log.
-
-### Message
-
-- **Email Subject** - the subject line. It can include entry values:
-
-        New entry: {title}
-        {{ entry.section.name }}: {title}
-
-- **Email Template** - path of a template in your `templates/` folder to use for the email body. Leave blank to use the built-in template.
 - **Send through the queue** - on by default. The email is sent by a background job, so the form responds straight away and a failed email can be retried from **Utilities → Queue Manager**. Turn it off to send the email during the form submission.
 
 ### Section settings
@@ -82,23 +67,25 @@ Invalid addresses are skipped and noted in the Craft log.
 Each section that has **Allow guest submissions** turned on in the Guest Entries plugin has its own row. Other sections aren't listed and never send notifications.
 
 - **Notify** - turn notifications on for that section. It is off by default, so no emails are sent until you enable the sections you want.
-- **Recipients**, **Subject**, **Template** - override the general settings for that section. Blank cells use the general settings.
+- **Recipients** - who receives the notification. Add several addresses by separating them with commas, e.g. `editor@example.com, admin@example.com`. Defaults to the system email address.
+- **Subject** - the subject line. It can include entry values, e.g. `New entry: {title}` or `{{ entry.section.name }}: {title}`. Defaults to "New Entry Created".
+- **Template** - a template in your `templates/` folder for the email body, with suggestions as you type. Defaults to the built-in email.
+
+Invalid addresses are skipped and noted in the Craft log.
 
 ### Site settings
 
-Shown on multi-site installs. Each site can have its own **Recipients** and **Subject**.
+Shown on multi-site installs. Each site can have its own **Recipients** and **Subject**, used when the section doesn't set its own.
 
 Emails are always rendered in the language of the site the entry was submitted to.
 
-When several settings apply, the most specific one wins: **section**, then **site**, then the general setting.
+When several settings apply, the most specific one wins: **section**, then **site**, then the default.
+
+To check that email delivery works, use **Settings → Email → Test** in the Craft control panel.
 
 ### If Guest Entries is missing
 
 When the Guest Entries plugin isn't installed or enabled, admins see an alert across the control panel and a warning at the top of the plugin settings, and no notifications are sent.
-
-### Test email
-
-**Send test email** sends a notification for the most recent entry to your own email address, using the saved settings. Save your changes before testing. The subject is prefixed with `[Test]`.
 
 ## Email templates
 
@@ -108,7 +95,6 @@ A custom template receives these variables:
 |-----------|----------------------------------------------|
 | `entry`   | The submitted entry                          |
 | `subject` | The rendered subject line                    |
-| `isTest`  | `true` when the email is a test email        |
 
 Example:
 

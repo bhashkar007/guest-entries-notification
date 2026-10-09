@@ -16,6 +16,11 @@ use craft\base\Model;
 class Settings extends Model
 {
     /**
+     * Settings that no longer exist, but may still be stored by older versions.
+     */
+    private const LEGACY_SETTINGS = ['emailTo', 'cc', 'bcc', 'emailSubject', 'confirmationTemplate'];
+
+    /**
      * @var string|null Sender email. Defaults to the system email address.
      */
     public ?string $fromEmail = null;
@@ -26,34 +31,9 @@ class Settings extends Model
     public ?string $fromName = null;
 
     /**
-     * @var string|null Comma-separated recipients. Defaults to the system email address.
-     */
-    public ?string $emailTo = null;
-
-    /**
-     * @var string|null Comma-separated CC recipients.
-     */
-    public ?string $cc = null;
-
-    /**
-     * @var string|null Comma-separated BCC recipients.
-     */
-    public ?string $bcc = null;
-
-    /**
      * @var string|null Reply-To address. May reference an entry value, e.g. `{email}`.
      */
     public ?string $replyTo = null;
-
-    /**
-     * @var string|null Subject. May reference entry values, e.g. `New entry: {title}`.
-     */
-    public ?string $emailSubject = 'New Entry Created';
-
-    /**
-     * @var string|null Path of a site template to use for the email body.
-     */
-    public ?string $confirmationTemplate = null;
 
     /**
      * @var bool Whether notifications are sent by a queue job rather than during the request.
@@ -78,6 +58,11 @@ class Settings extends Model
     public function setAttributes($values, $safeOnly = true): void
     {
         if (is_array($values)) {
+            // Settings from earlier versions that are now set per section.
+            foreach (self::LEGACY_SETTINGS as $name) {
+                unset($values[$name]);
+            }
+
             // An empty table is posted as an empty string.
             foreach (['sections', 'sites'] as $name) {
                 if (array_key_exists($name, $values) && !is_array($values[$name])) {
@@ -99,11 +84,10 @@ class Settings extends Model
     protected function defineRules(): array
     {
         return [
-            [['fromEmail', 'fromName', 'emailTo', 'cc', 'bcc', 'replyTo', 'emailSubject', 'confirmationTemplate'], 'trim'],
-            [['fromEmail', 'fromName', 'emailTo', 'cc', 'bcc', 'replyTo', 'emailSubject', 'confirmationTemplate'], 'string'],
+            [['fromEmail', 'fromName', 'replyTo'], 'trim'],
+            [['fromEmail', 'fromName', 'replyTo'], 'string'],
             [['fromEmail'], 'email', 'when' => fn(self $model) => !str_starts_with((string)$model->fromEmail, '$')],
             [['useQueue'], 'boolean'],
-            [['emailSubject'], 'default', 'value' => 'New Entry Created'],
         ];
     }
 }

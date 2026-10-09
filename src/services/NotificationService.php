@@ -98,20 +98,17 @@ class NotificationService extends Component
 
     /**
      * Sends the notification email for an entry.
-     *
-     * @param string[]|null $to Recipients to use instead of the configured ones
-     * @param bool $isTest Whether this is a test email
      */
-    public function send(Entry $entry, ?array $to = null, bool $isTest = false): bool
+    public function send(Entry $entry): bool
     {
         $this->lastError = null;
 
-        if (!$isTest && !$this->isEnabledFor($entry)) {
+        if (!$this->isEnabledFor($entry)) {
             return true;
         }
 
         try {
-            $message = $this->inSite($entry->getSite(), fn() => $this->buildMessage($entry, $to, $isTest));
+            $message = $this->inSite($entry->getSite(), fn() => $this->buildMessage($entry));
 
             if (!Craft::$app->getMailer()->send($message)) {
                 $this->lastError = 'The mailer reported a failure. Check the Craft logs and your email settings.';
@@ -127,29 +124,6 @@ class NotificationService extends Component
         }
 
         return true;
-    }
-
-    /**
-     * Returns the most recently created entry, for test emails.
-     */
-    public function findSampleEntry(): ?Entry
-    {
-        $sectionIds = array_map(
-            fn($section) => $section->id,
-            Craft::$app->getEntries()->getAllSections()
-        );
-
-        if (!$sectionIds) {
-            return null;
-        }
-
-        return Entry::find()
-            ->sectionId($sectionIds)
-            ->site('*')
-            ->unique()
-            ->status(null)
-            ->orderBy(['elements.dateCreated' => SORT_DESC])
-            ->one();
     }
 
     /**
@@ -195,7 +169,7 @@ class NotificationService extends Component
     /**
      * Builds the message. Must be called with the entry's site as the current site.
      */
-    private function buildMessage(Entry $entry, ?array $to, bool $isTest): Message
+    private function buildMessage(Entry $entry): Message
     {
         $settings = GuestEntriesNotification::getInstance()->getSettings();
         $mailSettings = App::mailSettings();
@@ -205,9 +179,9 @@ class NotificationService extends Component
 
         $systemEmail = (string)App::parseEnv($mailSettings->fromEmail);
 
-        // The most specific setting wins: section, then site, then the general one.
-        $recipients = $to ?? $this->addresses(
-            $this->firstFilled($section['emailTo'] ?? null, $site['emailTo'] ?? null, $settings->emailTo),
+        // The most specific setting wins: section, then site, then the system email address.
+        $recipients = $this->addresses(
+            $this->firstFilled($section['emailTo'] ?? null, $site['emailTo'] ?? null),
             $entry
         );
 
@@ -221,8 +195,7 @@ class NotificationService extends Component
 
         $subjectTemplate = $this->firstFilled(
             $section['emailSubject'] ?? null,
-            $site['emailSubject'] ?? null,
-            $settings->emailSubject
+            $site['emailSubject'] ?? null
         ) ?? self::DEFAULT_SUBJECT;
 
         $subject = trim(preg_replace('~\s+~', ' ', $this->renderString($subjectTemplate, $entry)) ?? '');
@@ -231,17 +204,12 @@ class NotificationService extends Component
             $subject = self::DEFAULT_SUBJECT;
         }
 
-        if ($isTest) {
-            $subject = '[Test] ' . $subject;
-        }
-
         $variables = [
             'entry' => $entry,
             'subject' => $subject,
-            'isTest' => $isTest,
         ];
 
-        $template = $this->firstFilled($section['template'] ?? null, $settings->confirmationTemplate);
+        $template = $this->firstFilled($section['template'] ?? null);
 
         if ($template !== null && !$view->doesTemplateExist($template, View::TEMPLATE_MODE_SITE)) {
             Craft::warning("The email template \"$template\" doesn't exist; using the default one.", __METHOD__);
@@ -270,14 +238,6 @@ class NotificationService extends Component
 
         if ($replyTo = $this->addresses($settings->replyTo, $entry)) {
             $message->setReplyTo($replyTo[0]);
-        }
-
-        if ($cc = $this->addresses($settings->cc, $entry)) {
-            $message->setCc($cc);
-        }
-
-        if ($bcc = $this->addresses($settings->bcc, $entry)) {
-            $message->setBcc($bcc);
         }
 
         return $message;

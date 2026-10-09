@@ -10,21 +10,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Added
 - Craft CMS 5 and Guest Entries 4 compatibility.
-- Per-section settings: choose which sections send notifications, and give a section its own recipients, subject and template.
+- Per-section settings: choose which sections send notifications, and give a section its own recipients (comma-separated), subject and template. The template field suggests templates as you type.
 - Per-site recipients and subject, and emails are rendered in the language of the site the entry was submitted to.
 - The subject can include entry values, e.g. `New entry: {title}`.
-- Reply-To, CC and BCC settings. Reply-To can come from an entry field, e.g. `{email}`.
+- Reply-To setting, which can come from an entry field, e.g. `{email}`.
 - Notifications are sent through the queue by default, with a setting to send them immediately instead.
 - A plain-text version of the email is generated and sent alongside the HTML.
-- A “Send test email” button on the settings page.
 - A control panel alert, and a warning on the settings page, when the Guest Entries plugin isn’t installed or enabled.
-- Email templates now also receive `subject` and `isTest` variables.
+- Email templates now also receive a `subject` variable.
 
 ### Changed
 - The package is now `uxi360/guest-entries-notification` and the PHP namespace is `uxi360\guestentriesnotification`. The plugin handle is still `guest-entries-notification`, and existing settings are kept.
 - The plugin now requires Craft CMS 5.0.0, Guest Entries 4.0.0 and PHP 8.2 or later.
 - The plugin's service is now available as `notifications` (was `guestEntriesNotificationService`).
 - Notifications are now off by default and must be turned on for each section in the plugin settings.
+- Recipients, subject and template are now set per section (or per site). The general Email, Email Subject and Email Template settings have been removed; without a section value, the system email address, “New Entry Created” and the built-in template are used.
 - Notifications are only sent for sections that allow guest submissions in the Guest Entries plugin.
 - Entries flagged as spam by Guest Entries no longer trigger a notification.
 - The plugin is now maintained by UXI360 InfoTech.

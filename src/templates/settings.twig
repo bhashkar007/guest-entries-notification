@@ -37,60 +37,9 @@
     value: settings.replyTo,
 }) }}
 
-<hr>
-
-<h2>{{ 'Recipients'|t('guest-entries-notification') }}</h2>
-
-{{ forms.textField({
-    label: 'Email'|t('guest-entries-notification'),
-    instructions: 'Who receives the notification. Separate several addresses with commas. Leave blank to use the system email address.'|t('guest-entries-notification'),
-    id: 'emailTo',
-    name: 'emailTo',
-    placeholder: systemFromEmail,
-    value: settings.emailTo,
-}) }}
-
-{{ forms.textField({
-    label: 'CC'|t('guest-entries-notification'),
-    instructions: 'Separate several addresses with commas.'|t('guest-entries-notification'),
-    id: 'cc',
-    name: 'cc',
-    value: settings.cc,
-}) }}
-
-{{ forms.textField({
-    label: 'BCC'|t('guest-entries-notification'),
-    instructions: 'Separate several addresses with commas.'|t('guest-entries-notification'),
-    id: 'bcc',
-    name: 'bcc',
-    value: settings.bcc,
-}) }}
-
-<hr>
-
-<h2>{{ 'Message'|t('guest-entries-notification') }}</h2>
-
-{{ forms.textField({
-    label: 'Email Subject'|t('guest-entries-notification'),
-    instructions: 'The subject line. It can include entry values, such as `New entry: {title}` or `{{ entry.section.name }}: {title}`.'|t('guest-entries-notification'),
-    id: 'emailSubject',
-    name: 'emailSubject',
-    value: settings.emailSubject,
-}) }}
-
-{{ forms.textField({
-    label: 'Email Template'|t('guest-entries-notification'),
-    instructions: 'Path of a template in your `templates/` folder to use for the email body. It receives `entry`, `subject` and `isTest` variables. Leave blank to use the built-in template. A plain-text version is generated from it automatically.'|t('guest-entries-notification'),
-    id: 'confirmationTemplate',
-    name: 'confirmationTemplate',
-    class: 'code',
-    placeholder: '_emails/guest-entry',
-    value: settings.confirmationTemplate,
-}) }}
-
 {{ forms.lightswitchField({
     label: 'Send through the queue'|t('guest-entries-notification'),
-    instructions: 'Send notifications in a background job, so the form responds straight away and a mail problem can be retried. Turn this off to send the email while the form is being submitted.'|t('guest-entries-notification'),
+    instructions: 'Send notifications in a background job, so the form responds straight away and a failed email can be retried. Turn this off to send the email while the form is being submitted.'|t('guest-entries-notification'),
     id: 'useQueue',
     name: 'useQueue',
     on: settings.useQueue,
@@ -101,7 +50,7 @@
 {% if sectionRows|length %}
     {{ forms.editableTableField({
         label: 'Section Settings'|t('guest-entries-notification'),
-        instructions: 'Only sections that allow guest submissions in the Guest Entries plugin are listed. Notifications are off until you turn on Notify for a section. A section can also have its own recipients, subject or template; blank cells use the settings above.'|t('guest-entries-notification'),
+        instructions: 'Only sections that allow guest submissions in the Guest Entries plugin are listed, and notifications are off until you turn on Notify. Add several recipients by separating them with commas. Leave Recipients blank to use the system email address, Subject blank for “New Entry Created”, and Template blank for the built-in email.'|t('guest-entries-notification'),
         id: 'sections',
         name: 'sections',
         cols: {
@@ -118,14 +67,19 @@
             emailTo: {
                 type: 'singleline',
                 heading: 'Recipients'|t('guest-entries-notification'),
+                info: 'Separate several email addresses with commas, e.g. `editor@example.com, admin@example.com`.'|t('guest-entries-notification'),
+                placeholder: 'editor@example.com, admin@example.com',
             },
             emailSubject: {
                 type: 'singleline',
                 heading: 'Subject'|t('guest-entries-notification'),
+                info: 'Can include entry values, e.g. `New entry: {title}`.'|t('guest-entries-notification'),
+                placeholder: 'New entry: {title}',
             },
             template: {
-                type: 'singleline',
+                type: 'template',
                 heading: 'Template'|t('app'),
+                info: 'A template in your `templates/` folder for the email body. It receives `entry` and `subject` variables.'|t('guest-entries-notification'),
                 code: true,
             },
         },
@@ -143,7 +97,7 @@
 {% if isMultiSite %}
     {{ forms.editableTableField({
         label: 'Site Settings'|t('guest-entries-notification'),
-        instructions: 'Give a site its own recipients or subject. Emails are always written in the language of the site the entry was submitted to. Section settings take priority over site settings.'|t('guest-entries-notification'),
+        instructions: 'Give a site its own recipients or subject, used when the section doesn’t set one. Separate several recipients with commas. Emails are always written in the language of the site the entry was submitted to.'|t('guest-entries-notification'),
         id: 'sites',
         name: 'sites',
         cols: {
@@ -155,6 +109,7 @@
             emailTo: {
                 type: 'singleline',
                 heading: 'Recipients'|t('guest-entries-notification'),
+                info: 'Separate several email addresses with commas.'|t('guest-entries-notification'),
             },
             emailSubject: {
                 type: 'singleline',
@@ -168,13 +123,3 @@
         allowReorder: false,
     }) }}
 {% endif %}
-
-<hr>
-
-<h2>{{ 'Test Email'|t('guest-entries-notification') }}</h2>
-
-<p>{{ 'Sends a notification for the most recent entry to your own email address ({email}), using the saved settings. Save any changes first.'|t('guest-entries-notification', { email: currentUser.email }) }}</p>
-
-<div class="buttons">
-    <button type="button" class="btn formsubmit" data-action="guest-entries-notification/test/send" data-redirect="{{ 'settings/plugins/guest-entries-notification'|hash }}">{{ 'Send test email'|t('guest-entries-notification') }}</button>
-</div>
