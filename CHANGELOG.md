@@ -24,13 +24,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - The plugin now requires Craft CMS 5.0.0, Guest Entries 4.0.0 and PHP 8.2 or later.
 - The plugin's service is now available as `notifications` (was `guestEntriesNotificationService`).
 - Notifications are now off by default and must be turned on for each section in the plugin settings.
-- Recipients, subject and template are now set per section (or per site). The general Email, Email Subject and Email Template settings have been removed; without a section value, the system email address, “New Entry Created” and the built-in template are used.
+- Recipients, subject and template are now set per section (or per site). The general Email, Email Subject and Email Template settings have been removed; without a section value, the system email address, “New Entry Created” and the built-in email are used.
 - Notifications are only sent for sections that allow guest submissions in the Guest Entries plugin.
 - Entries flagged as spam by Guest Entries no longer trigger a notification.
 - The plugin is now maintained by UXI360 InfoTech.
 
 ### Removed
 - Removed the unused asset bundle, empty config file and translation file.
+- Removed the built-in `notification.twig` email template. Sections without a template now get a simple built-in email (entry title, section, site, submission date and a link to review the entry).
 
 ### Fixed
 - Fixed a bug where the template mode wasn't restored after the email was rendered, which could break the page shown after a submission.

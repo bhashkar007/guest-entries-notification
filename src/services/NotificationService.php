@@ -11,6 +11,7 @@ use Craft;
 use craft\elements\Entry;
 use craft\guestentries\Plugin as GuestEntries;
 use craft\helpers\App;
+use craft\helpers\Html;
 use craft\helpers\Queue;
 use craft\mail\Message;
 use craft\models\Site;
@@ -26,8 +27,6 @@ use yii\base\Component;
  */
 class NotificationService extends Component
 {
-    private const DEFAULT_TEMPLATE = 'guest-entries-notification/notification';
-
     private const DEFAULT_SUBJECT = 'New Entry Created';
 
     /**
@@ -212,13 +211,13 @@ class NotificationService extends Component
         $template = $this->firstFilled($section['template'] ?? null);
 
         if ($template !== null && !$view->doesTemplateExist($template, View::TEMPLATE_MODE_SITE)) {
-            Craft::warning("The email template \"$template\" doesn't exist; using the default one.", __METHOD__);
+            Craft::warning("The email template \"$template\" doesn't exist; using the built-in email.", __METHOD__);
             $template = null;
         }
 
         $html = $template !== null
             ? $view->renderTemplate($template, $variables, View::TEMPLATE_MODE_SITE)
-            : $view->renderTemplate(self::DEFAULT_TEMPLATE, $variables, View::TEMPLATE_MODE_CP);
+            : $this->defaultHtml($entry, $subject);
 
         $fromEmail = $this->firstFilled((string)App::parseEnv($settings->fromEmail), $systemEmail);
         $fromName = $this->firstFilled(
@@ -241,6 +240,57 @@ class NotificationService extends Component
         }
 
         return $message;
+    }
+
+    /**
+     * Builds the built-in email, used when the section has no template.
+     */
+    private function defaultHtml(Entry $entry, string $subject): string
+    {
+        $t = fn(string $message, array $params = []) => Craft::t('guest-entries-notification', $message, $params);
+        $site = $entry->getSite();
+        $section = $entry->getSection();
+
+        $rows = [
+            $t('Title') => (string)$entry->title,
+            $t('Section') => $section ? Craft::t('site', $section->name) : '',
+            $t('Site') => Craft::t('site', $site->getName()),
+            $t('Submitted') => $entry->dateCreated
+                ? Craft::$app->getFormatter()->asDatetime($entry->dateCreated, 'short')
+                : '',
+        ];
+
+        $tableRows = '';
+        foreach ($rows as $label => $value) {
+            if ($value === '') {
+                continue;
+            }
+
+            $tableRows .= '<tr>'
+                . '<th align="left" valign="top" style="padding:6px 16px 6px 0;color:#555;font-weight:600;">' . Html::encode($label) . '</th>'
+                . '<td valign="top" style="padding:6px 0;">' . Html::encode($value) . '</td>'
+                . '</tr>';
+        }
+
+        $intro = $t('A new entry was submitted to the {section} section.', [
+            'section' => $section ? Craft::t('site', $section->name) : '',
+        ]);
+
+        $link = '';
+        if ($url = $entry->getCpEditUrl()) {
+            $link = '<p style="margin:24px 0 0;"><a href="' . Html::encode($url) . '" style="color:#0b69a3;">'
+                . Html::encode($t('Review the entry'))
+                . '</a></p>';
+        }
+
+        return '<!DOCTYPE html>'
+            . '<html lang="' . Html::encode($site->language) . '"><head><meta charset="utf-8"><title>' . Html::encode($subject) . '</title></head>'
+            . '<body style="margin:0;padding:24px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#222;">'
+            . '<h1 style="margin:0 0 16px;font-size:20px;">' . Html::encode($subject) . '</h1>'
+            . '<p style="margin:0 0 16px;">' . Html::encode($intro) . '</p>'
+            . '<table cellpadding="0" cellspacing="0" border="0">' . $tableRows . '</table>'
+            . $link
+            . '</body></html>';
     }
 
     /**

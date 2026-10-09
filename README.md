@@ -69,7 +69,7 @@ Each section that has **Allow guest submissions** turned on in the Guest Entries
 - **Notify** - turn notifications on for that section. It is off by default, so no emails are sent until you enable the sections you want.
 - **Recipients** - who receives the notification. Add several addresses by separating them with commas, e.g. `editor@example.com, admin@example.com`. Defaults to the system email address.
 - **Subject** - the subject line. It can include entry values, e.g. `New entry: {title}` or `{{ entry.section.name }}: {title}`. Defaults to "New Entry Created".
-- **Template** - a template in your `templates/` folder for the email body, with suggestions as you type. Defaults to the built-in email.
+- **Template** - a template in your `templates/` folder for the email body, with suggestions as you type. Defaults to a simple built-in email with the entry title, section, site, submission date and a link to review the entry.
 
 Invalid addresses are skipped and noted in the Craft log.
 
