@@ -1,99 +1,90 @@
 <?php
 /**
- * Guest Entries Notification plugin for Craft CMS 4.x
+ * Guest Entries Notification plugin for Craft CMS 5.x
  *
- * A plugin to get notification when an entry is created.
- *
- * @link      https://360adaptive.com
- * @copyright Copyright (c) 2018 Bhashkar Yadav
+ * @link      https://uxi360.com
  */
 
-namespace by\guestentriesnotification;
-
-use by\guestentriesnotification\services\GuestEntriesNotificationService as GuestEntriesNotificationServiceService;
-use by\guestentriesnotification\models\Settings;
+namespace uxi360\guestentriesnotification;
 
 use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
-
+use craft\events\RegisterCpAlertsEvent;
 use craft\guestentries\controllers\SaveController;
 use craft\guestentries\events\SaveEvent;
-
+use craft\helpers\App;
+use craft\helpers\Cp;
+use craft\helpers\Html;
+use uxi360\guestentriesnotification\models\Settings;
+use uxi360\guestentriesnotification\services\NotificationService;
 use yii\base\Event;
 
 /**
- * Class GuestEntriesNotification
+ * @author    UXI360 Team
+ * @since     3.0.0
  *
- * @author    Bhashkar Yadav
- * @package   GuestEntriesNotification
- * @since     2.0.0
- *
- * @property  GuestEntriesNotificationServiceService $guestEntriesNotificationService
+ * @property-read NotificationService $notifications
+ * @method Settings getSettings()
  */
 class GuestEntriesNotification extends Plugin
 {
-    // Static Properties
-    // =========================================================================
-
     /**
-     * @var GuestEntriesNotification
-     */
-    public static $plugin;
-
-    // Public Properties
-    // =========================================================================
-
-    /**
-     * @var string
+     * @inheritdoc
      */
     public string $schemaVersion = '2.0.0';
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
      */
-    public function init()
+    public bool $hasCpSettings = true;
+
+    /**
+     * @inheritdoc
+     */
+    public static function config(): array
     {
-        parent::init();
-        self::$plugin = $this;
-
-
-        if (!Craft::$app->plugins->isPluginInstalled('guest-entries')) {
-            Craft::$app->session->setNotice(Craft::t('guest-entries-notification', 'The Guest Entries plugin is not installed or activated, Guest Entries Notification does not work without it.'));
-        }
-
-
-        Event::on(SaveController::class, SaveController::EVENT_AFTER_SAVE_ENTRY, function(SaveEvent $e) {
-            $entry = $e->entry;
-            GuestEntriesNotification::$plugin->guestEntriesNotificationService->sendNotification($entry);
-        });
-
-        Event::on(
-            Plugins::class,
-            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
-                if ($event->plugin === $this) {
-                }
-            }
-        );
-
-        Craft::info(
-            Craft::t(
-                'guest-entries-notification',
-                '{name} plugin loaded',
-                ['name' => $this->name]
-            ),
-            __METHOD__
-        );
+        return [
+            'components' => [
+                'notifications' => NotificationService::class,
+            ],
+        ];
     }
 
-    // Protected Methods
-    // =========================================================================
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
+        parent::init();
+
+        if (Craft::$app->getRequest()->getIsCpRequest()) {
+            Event::on(Cp::class, Cp::EVENT_REGISTER_ALERTS, function(RegisterCpAlertsEvent $event) {
+                $user = Craft::$app->getUser()->getIdentity();
+
+                if ($user && $user->admin && !$this->notifications->isGuestEntriesAvailable()) {
+                    $event->alerts[] = Craft::t('guest-entries-notification', 'Guest Entries Notification needs the Guest Entries plugin, which isn’t installed or enabled. No notifications will be sent.');
+                }
+            });
+        }
+
+        // Nothing to listen to if the Guest Entries plugin isn't there.
+        if (!class_exists(SaveController::class)) {
+            return;
+        }
+
+        Event::on(
+            SaveController::class,
+            SaveController::EVENT_AFTER_SAVE_ENTRY,
+            function(SaveEvent $event) {
+                if ($event->isSpam || !$event->entry) {
+                    return;
+                }
+
+                $this->notifications->handleSavedEntry($event->entry);
+            }
+        );
+    }
 
     /**
      * @inheritdoc
@@ -106,13 +97,47 @@ class GuestEntriesNotification extends Plugin
     /**
      * @inheritdoc
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
-        return Craft::$app->view->renderTemplate(
-            'guest-entries-notification/settings',
-            [
-                'settings' => $this->getSettings()
-            ]
-        );
+        $settings = $this->getSettings();
+
+        $sectionRows = [];
+        foreach (Craft::$app->getEntries()->getAllSections() as $section) {
+            // Only sections that accept guest submissions can send notifications.
+            if (!$this->notifications->allowsGuestSubmissions($section->uid)) {
+                continue;
+            }
+
+            $saved = $settings->sections[$section->uid] ?? [];
+            $sectionRows[$section->uid] = [
+                'heading' => Html::encode(Craft::t('site', $section->name)),
+                'enabled' => !empty($saved['enabled']),
+                'emailTo' => $saved['emailTo'] ?? '',
+                'emailSubject' => $saved['emailSubject'] ?? '',
+                'template' => $saved['template'] ?? '',
+            ];
+        }
+
+        $siteRows = [];
+        foreach (Craft::$app->getSites()->getAllSites() as $site) {
+            $saved = $settings->sites[$site->uid] ?? [];
+            $siteRows[$site->uid] = [
+                'heading' => Html::encode(Craft::t('site', $site->getName())),
+                'emailTo' => $saved['emailTo'] ?? '',
+                'emailSubject' => $saved['emailSubject'] ?? '',
+            ];
+        }
+
+        $mailSettings = App::mailSettings();
+
+        return Craft::$app->getView()->renderTemplate('guest-entries-notification/settings', [
+            'settings' => $settings,
+            'sectionRows' => $sectionRows,
+            'siteRows' => $siteRows,
+            'guestEntriesAvailable' => $this->notifications->isGuestEntriesAvailable(),
+            'isMultiSite' => Craft::$app->getIsMultiSite(),
+            'systemFromEmail' => App::parseEnv($mailSettings->fromEmail),
+            'systemFromName' => App::parseEnv($mailSettings->fromName),
+        ]);
     }
 }

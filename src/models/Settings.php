@@ -1,58 +1,93 @@
 <?php
 /**
- * Guest Entries Notification plugin for Craft CMS 4.x
+ * Guest Entries Notification plugin for Craft CMS 5.x
  *
- * A plugin to get notification when an entry is created.
- *
- * @link      https://360adaptive.com
- * @copyright Copyright (c) 2018 Bhashkar Yadav
+ * @link      https://uxi360.com
  */
 
-namespace by\guestentriesnotification\models;
+namespace uxi360\guestentriesnotification\models;
 
-use by\guestentriesnotification\GuestEntriesNotification;
-
-use Craft;
 use craft\base\Model;
 
 /**
- * @author    Bhashkar Yadav
- * @package   GuestEntriesNotification
+ * @author    UXI360 Team
  * @since     2.0.0
  */
 class Settings extends Model
 {
-    // Public Properties
-    // =========================================================================
+    /**
+     * Settings that no longer exist, but may still be stored by older versions.
+     */
+    private const LEGACY_SETTINGS = ['emailTo', 'cc', 'bcc', 'emailSubject', 'confirmationTemplate'];
 
     /**
-     * @var string
+     * @var string|null Sender email. Defaults to the system email address.
      */
-    public $confirmationTemplate = '';
-    public $fromEmail = '';
-    public $fromName = '';
-    public $emailTo = '';
-    public $emailSubject = 'New Entry Created';
+    public ?string $fromEmail = null;
 
-    // Public Methods
-    // =========================================================================
+    /**
+     * @var string|null Sender name. Defaults to the system sender name.
+     */
+    public ?string $fromName = null;
+
+    /**
+     * @var string|null Reply-To address. May reference an entry value, e.g. `{email}`.
+     */
+    public ?string $replyTo = null;
+
+    /**
+     * @var bool Whether notifications are sent by a queue job rather than during the request.
+     */
+    public bool $useQueue = true;
+
+    /**
+     * @var array Per-section overrides, indexed by section UID.
+     *            Each may have `enabled`, `emailTo`, `emailSubject` and `template`.
+     */
+    public array $sections = [];
+
+    /**
+     * @var array Per-site overrides, indexed by site UID.
+     *            Each may have `emailTo` and `emailSubject`.
+     */
+    public array $sites = [];
 
     /**
      * @inheritdoc
      */
-    public function rules(): array
+    public function setAttributes($values, $safeOnly = true): void
+    {
+        if (is_array($values)) {
+            // Settings from earlier versions that are now set per section.
+            foreach (self::LEGACY_SETTINGS as $name) {
+                unset($values[$name]);
+            }
+
+            // An empty table is posted as an empty string.
+            foreach (['sections', 'sites'] as $name) {
+                if (array_key_exists($name, $values) && !is_array($values[$name])) {
+                    $values[$name] = [];
+                }
+            }
+
+            if (array_key_exists('useQueue', $values)) {
+                $values['useQueue'] = (bool)$values['useQueue'];
+            }
+        }
+
+        parent::setAttributes($values, $safeOnly);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function defineRules(): array
     {
         return [
-            ['confirmationTemplate', 'string'],
-            ['confirmationTemplate', 'default', 'value' => ''],
-            ['fromEmail', 'string'],
-            ['fromEmail', 'default', 'value' => ''],
-            ['fromName', 'string'],
-            ['fromName', 'default', 'value' => ''],
-            ['emailTo', 'string'],
-            ['emailTo', 'default', 'value' => ''],
-            ['emailSubject', 'string'],
-            ['emailSubject', 'default', 'value' => 'New Entry Created'],
+            [['fromEmail', 'fromName', 'replyTo'], 'trim'],
+            [['fromEmail', 'fromName', 'replyTo'], 'string'],
+            [['fromEmail'], 'email', 'when' => fn(self $model) => !str_starts_with((string)$model->fromEmail, '$')],
+            [['useQueue'], 'boolean'],
         ];
     }
 }
